@@ -7,7 +7,7 @@ const qfs = require('q-io/fs')
 const rawer = require('../lib/rawer')
 const common = require('duniter-common')
 const entities = require('../lib/entities')
-const cryptoService = require('../services/crypto')()
+const documentService = require('../services').document()
 
 let acc1, ann1, rawAcc1NoSig = '', rawAnn1NoSig = ''
 
@@ -83,37 +83,43 @@ describe('Validation', () => {
     ann1.sig = user1.signSync(rawer.announce(ann1))
   }))
 
-  it('account should have good formatting', () => co(function*() {
-    const raw = rawer.account(acc1)
-    let expected = rawAcc1NoSig
-    expected += 'PmoKBFEXjQhoxYubhIizm8eCBY7MibRr2G/PZLZtoMiqxN9+alCA66HiapRyEtp+zCUF+w7WWWeRaXRPIVX9Dw=='
-    raw.should.equal(expected)
-  }))
+  it('good account should have good formatting', () => {
+    const raw = rawAcc1NoSig + 'PmoKBFEXjQhoxYubhIizm8eCBY7MibRr2G/PZLZtoMiqxN9+alCA66HiapRyEtp+zCUF+w7WWWeRaXRPIVX9Dw=='
+    documentService.checkAccountFormat(acc1, raw).should.equal(true)
+  })
 
-  it('announce should have good formatting', () => co(function*() {
-    const raw = rawer.announce(ann1)
-    let expected = rawAnn1NoSig
-    expected += 'pmaU/YYxncMrndd/jEievLz/ArZGeTr24CviFj73tHCigZhuWnDVfKfSgJKYreMEJnqvX4wYu6CWm81f9FG0Aw=='
-    raw.should.equal(expected)
-  }))
+  it('wrong account should have wrong formatting', () => {
+    const raw = rawAcc1NoSig + 'PamoKBFEXjQhoxYubhIizm8eCBY7MibRr2G/PZLZtoMiqxN9+alCA66HiapRyEtp+zCUF+w7WWWeRaXRPIVX9Dw=='
+    documentService.checkAccountFormat(acc1, raw).should.equal(false)
+  })
+
+  it('good announce should have good formatting', () => {
+    const raw = rawAnn1NoSig + 'pmaU/YYxncMrndd/jEievLz/ArZGeTr24CviFj73tHCigZhuWnDVfKfSgJKYreMEJnqvX4wYu6CWm81f9FG0Aw=='
+    documentService.checkAnnounceFormat(ann1, raw).should.equal(true)
+  })
+
+  it('wrong announce should have wrong formatting', () => {
+    const raw = rawAnn1NoSig + 'ApmaU/YYxncMrndd/jEievLz/ArZGeTr24CviFj73tHCigZhuWnDVfKfSgJKYreMEJnqvX4wYu6CWm81f9FG0Aw=='
+    documentService.checkAnnounceFormat(ann1, raw).should.equal(false)
+  })
 
   it('good account should have good signature', () => {
-    cryptoService.checkAccountSignature(acc1).should.equal(true)
+    documentService.checkAccountSignature(acc1).should.equal(true)
   })
 
   it('wrong account should have wrong signature', () => {
     const acc2 = entities.Account.fromJSON(acc1)
     acc2.title = 'Wrong title'
-    cryptoService.checkAccountSignature(acc2).should.equal(false)
+    documentService.checkAccountSignature(acc2).should.equal(false)
   })
 
   it('good annouce should have good signature', () => {
-    cryptoService.checkAnnounceSignature(ann1).should.equal(true)
+    documentService.checkAnnounceSignature(ann1).should.equal(true)
   })
 
   it('wrong annouce should have wrong signature', () => {
     const ann2 = entities.Announce.fromJSON(ann1)
     ann2.title = 'Wrong title'
-    cryptoService.checkAnnounceSignature(ann2).should.equal(false)
+    documentService.checkAnnounceSignature(ann2).should.equal(false)
   })
 })
