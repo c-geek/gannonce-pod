@@ -12,35 +12,27 @@ module.exports = function () {
 
 function CryptoService() {
 
-  this.checkAccountFormat = (acc, raw) => {
-    const copy = Account.fromJSON(acc)
-    const raw2 = rawer.account(copy)
+  this.checkAccountFormat = (raw) => checkFormat(raw, Account)
+
+  this.checkAnnounceFormat = (raw) => checkFormat(raw, Announce)
+
+  function checkFormat(raw, entity) {
+    const copy = entity.fromRaw(raw)
+    const raw2 = entity.toRaw(copy)
     const sum1 = sha256(raw)
     const sum2 = sha256(raw2)
     return sum1 === sum2
   }
 
-  this.checkAnnounceFormat = (acc, raw) => {
-    const copy = Announce.fromJSON(acc)
-    const raw2 = rawer.announce(copy)
-    const sum1 = sha256(raw)
-    const sum2 = sha256(raw2)
-    return sum1 === sum2
-  }
+  this.checkAccountSignature = (acc) => checkSignature(acc, Account)
 
-  this.checkAccountSignature = (acc) => {
-    const copy = Account.fromJSON(acc)
+  this.checkAnnounceSignature = (acc) => checkSignature(acc, Announce)
+
+  function checkSignature(entity, Type) {
+    const copy = Type.fromJSON(entity)
     const sig = copy.sig
     copy.sig = ''
-    const raw = rawer.account(copy)
-    return common.keyring.verify(raw, sig, copy.pub)
-  }
-
-  this.checkAnnounceSignature = (acc) => {
-    const copy = Announce.fromJSON(acc)
-    const sig = copy.sig
-    copy.sig = ''
-    const raw = rawer.announce(copy)
+    const raw = Type.toRaw(copy)
     return common.keyring.verify(raw, sig, copy.pub)
   }
 }

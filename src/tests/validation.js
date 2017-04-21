@@ -19,53 +19,22 @@ let user1 = common.keyring.Key(
 describe('Validation', () => {
 
   before(() => co(function*() {
-    const img = yield qfs.read(path.join(__dirname, 'data/g1.png'), 'b')
     // Mock account 1
-    acc1 = {
-      pub: 'HgTTJLAQ5sqfknMq7yLPZbehtuLSsKj9CxWN7k8QvYJd',
-      uuid: 'd34f195c-4689-45b1-92b8-870097effb1d',
-      title: 'Account 1',
-      desc: 'A fake account for tests',
-      address: 'In memory',
-      logo: {
-        extension: 'png',
-        buffer: img
-      },
-      links: [
-        'https://duniter.org',
-        'https://duniter.org/fr',
-        'https://duniter.org/en'
-      ]
-    }
     rawAcc1NoSig += 'Version: 1\n'
     rawAcc1NoSig += 'Document: Account\n'
     rawAcc1NoSig += 'Currency: g1\n'
     rawAcc1NoSig += 'Pub: HgTTJLAQ5sqfknMq7yLPZbehtuLSsKj9CxWN7k8QvYJd\n'
     rawAcc1NoSig += 'Uuid: d34f195c-4689-45b1-92b8-870097effb1d\n'
-    rawAcc1NoSig += 'Title: Account 1\n'
+    rawAcc1NoSig += 'Title: Account 1 with 10 chars\n'
     rawAcc1NoSig += 'Desc: A fake account for tests\n'
-    rawAcc1NoSig += 'Address: In memory\n'
+    rawAcc1NoSig += 'Address: In memory (with 10 chars)\n'
     rawAcc1NoSig += 'Logo: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAABHNCSVQICAgIfAhkiAAAAg5JREFUKJE9kstLVGEAR3/fw/lG5502M6ChSJhETkFI0qoHWkqkCeNmFm4sMRD8Q2oV4aJNGwkMMpB2ZYsiBqeVc7UswkonvHPvOI87c1/eR4seZ3vO8gB/4YyIudvdSxsrUwVVmjfUnfvG29WZwtxU7xJnRPzrCAAk47znxfLUq5HxoQy4Dt/1/khGAUcgv75ZnF58PVGuOQeEMyI2nk5vjoyfzhxrDeiqgvLRMd5/NDE5GkE0nQRvDyO/li9eW3g3zGbHehbnF6/M2loNpiZDdMVQrVE4bhAnTsUR8BXA4ejpT6f2pW8Vmr1xJudZLVj1CngigoamocNRECYyHj/aBm8PwdZL8CwZ2evJHNlbvWV0DSSDNlWwpzogah0DmQSocGDJVYhuD7ZmgGrdqHxRTO42fsFRVHiJKg5/avgqWTh7tQ/EFwiJOhzNA20LgzYU+HoLtLhzJJFmHTDbcOliFL3BJtyigWOpAX27BH1fB6wo3KaJrV1bYtQmobEL4ZvMC4OlOJKdAbT2a2iVm2h1REASUfBqDLaq+Q9XKw8Ip0Q8v9tXuDwcHKKdabD+AAyzBM9nEPQkqAy4cgkfCmYx++T7MPN8uG8+NdfPR0KjqaCV8koaWD0FJnO4P8qwFM3PFwzp3rODiabtVcn/NSgRdwbjC5OZWG4wLc4BwO6hJb3cqq+sfa4tO55vAcBvXJrz3umEwZcAAAAASUVORK5CYII=\n'
     rawAcc1NoSig += 'Links[0]: https://duniter.org\n'
     rawAcc1NoSig += 'Links[1]: https://duniter.org/fr\n'
     rawAcc1NoSig += 'Links[2]: https://duniter.org/en\n'
-    acc1.sig = user1.signSync(rawer.account(acc1))
+    acc1 = entities.Account.fromRaw(rawAcc1NoSig)
+    acc1.sig = user1.signSync(rawAcc1NoSig)
     // Mock announce 1
-    ann1 = {
-      pub: 'HgTTJLAQ5sqfknMq7yLPZbehtuLSsKj9CxWN7k8QvYJd',
-      uuid: 'd34f195c-4689-45b1-92b8-870097effb1d',
-      title: 'Announce 1',
-      desc: 'Crowdfunding for developing ğchange',
-      price: '123456789.06',
-      fees: '98765.20',
-      type: 'Crowdfunding',
-      stock: '1',
-      images: [
-        { extension: 'png', buffer: img },
-        { extension: 'png', buffer: img },
-        { extension: 'png', buffer: img }
-      ]
-    }
     rawAnn1NoSig += 'Version: 1\n'
     rawAnn1NoSig += 'Document: Announce\n'
     rawAnn1NoSig += 'Currency: g1\n'
@@ -80,27 +49,28 @@ describe('Validation', () => {
     rawAnn1NoSig += 'Images[0]: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAABHNCSVQICAgIfAhkiAAAAg5JREFUKJE9kstLVGEAR3/fw/lG5502M6ChSJhETkFI0qoHWkqkCeNmFm4sMRD8Q2oV4aJNGwkMMpB2ZYsiBqeVc7UswkonvHPvOI87c1/eR4seZ3vO8gB/4YyIudvdSxsrUwVVmjfUnfvG29WZwtxU7xJnRPzrCAAk47znxfLUq5HxoQy4Dt/1/khGAUcgv75ZnF58PVGuOQeEMyI2nk5vjoyfzhxrDeiqgvLRMd5/NDE5GkE0nQRvDyO/li9eW3g3zGbHehbnF6/M2loNpiZDdMVQrVE4bhAnTsUR8BXA4ejpT6f2pW8Vmr1xJudZLVj1CngigoamocNRECYyHj/aBm8PwdZL8CwZ2evJHNlbvWV0DSSDNlWwpzogah0DmQSocGDJVYhuD7ZmgGrdqHxRTO42fsFRVHiJKg5/avgqWTh7tQ/EFwiJOhzNA20LgzYU+HoLtLhzJJFmHTDbcOliFL3BJtyigWOpAX27BH1fB6wo3KaJrV1bYtQmobEL4ZvMC4OlOJKdAbT2a2iVm2h1REASUfBqDLaq+Q9XKw8Ip0Q8v9tXuDwcHKKdabD+AAyzBM9nEPQkqAy4cgkfCmYx++T7MPN8uG8+NdfPR0KjqaCV8koaWD0FJnO4P8qwFM3PFwzp3rODiabtVcn/NSgRdwbjC5OZWG4wLc4BwO6hJb3cqq+sfa4tO55vAcBvXJrz3umEwZcAAAAASUVORK5CYII=\n'
     rawAnn1NoSig += 'Images[1]: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAABHNCSVQICAgIfAhkiAAAAg5JREFUKJE9kstLVGEAR3/fw/lG5502M6ChSJhETkFI0qoHWkqkCeNmFm4sMRD8Q2oV4aJNGwkMMpB2ZYsiBqeVc7UswkonvHPvOI87c1/eR4seZ3vO8gB/4YyIudvdSxsrUwVVmjfUnfvG29WZwtxU7xJnRPzrCAAk47znxfLUq5HxoQy4Dt/1/khGAUcgv75ZnF58PVGuOQeEMyI2nk5vjoyfzhxrDeiqgvLRMd5/NDE5GkE0nQRvDyO/li9eW3g3zGbHehbnF6/M2loNpiZDdMVQrVE4bhAnTsUR8BXA4ejpT6f2pW8Vmr1xJudZLVj1CngigoamocNRECYyHj/aBm8PwdZL8CwZ2evJHNlbvWV0DSSDNlWwpzogah0DmQSocGDJVYhuD7ZmgGrdqHxRTO42fsFRVHiJKg5/avgqWTh7tQ/EFwiJOhzNA20LgzYU+HoLtLhzJJFmHTDbcOliFL3BJtyigWOpAX27BH1fB6wo3KaJrV1bYtQmobEL4ZvMC4OlOJKdAbT2a2iVm2h1REASUfBqDLaq+Q9XKw8Ip0Q8v9tXuDwcHKKdabD+AAyzBM9nEPQkqAy4cgkfCmYx++T7MPN8uG8+NdfPR0KjqaCV8koaWD0FJnO4P8qwFM3PFwzp3rODiabtVcn/NSgRdwbjC5OZWG4wLc4BwO6hJb3cqq+sfa4tO55vAcBvXJrz3umEwZcAAAAASUVORK5CYII=\n'
     rawAnn1NoSig += 'Images[2]: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAABHNCSVQICAgIfAhkiAAAAg5JREFUKJE9kstLVGEAR3/fw/lG5502M6ChSJhETkFI0qoHWkqkCeNmFm4sMRD8Q2oV4aJNGwkMMpB2ZYsiBqeVc7UswkonvHPvOI87c1/eR4seZ3vO8gB/4YyIudvdSxsrUwVVmjfUnfvG29WZwtxU7xJnRPzrCAAk47znxfLUq5HxoQy4Dt/1/khGAUcgv75ZnF58PVGuOQeEMyI2nk5vjoyfzhxrDeiqgvLRMd5/NDE5GkE0nQRvDyO/li9eW3g3zGbHehbnF6/M2loNpiZDdMVQrVE4bhAnTsUR8BXA4ejpT6f2pW8Vmr1xJudZLVj1CngigoamocNRECYyHj/aBm8PwdZL8CwZ2evJHNlbvWV0DSSDNlWwpzogah0DmQSocGDJVYhuD7ZmgGrdqHxRTO42fsFRVHiJKg5/avgqWTh7tQ/EFwiJOhzNA20LgzYU+HoLtLhzJJFmHTDbcOliFL3BJtyigWOpAX27BH1fB6wo3KaJrV1bYtQmobEL4ZvMC4OlOJKdAbT2a2iVm2h1REASUfBqDLaq+Q9XKw8Ip0Q8v9tXuDwcHKKdabD+AAyzBM9nEPQkqAy4cgkfCmYx++T7MPN8uG8+NdfPR0KjqaCV8koaWD0FJnO4P8qwFM3PFwzp3rODiabtVcn/NSgRdwbjC5OZWG4wLc4BwO6hJb3cqq+sfa4tO55vAcBvXJrz3umEwZcAAAAASUVORK5CYII=\n'
-    ann1.sig = user1.signSync(rawer.announce(ann1))
+    ann1 = entities.Announce.fromRaw(rawAnn1NoSig)
+    ann1.sig = user1.signSync(rawAnn1NoSig)
   }))
 
   it('good account should have good formatting', () => {
-    const raw = rawAcc1NoSig + 'PmoKBFEXjQhoxYubhIizm8eCBY7MibRr2G/PZLZtoMiqxN9+alCA66HiapRyEtp+zCUF+w7WWWeRaXRPIVX9Dw=='
-    documentService.checkAccountFormat(acc1, raw).should.equal(true)
+    const raw = rawAcc1NoSig + 'vTJVVFRL5PXTtxm5smXeWvfRvVJjKuvKfke9Wz1BQI4Kra0Ljd/dm1cHdQzWU4DF3Vhj7rSAvbHFVI3BNDSZAA=='
+    documentService.checkAccountFormat(raw).should.equal(true)
   })
 
   it('wrong account should have wrong formatting', () => {
-    const raw = rawAcc1NoSig + 'PamoKBFEXjQhoxYubhIizm8eCBY7MibRr2G/PZLZtoMiqxN9+alCA66HiapRyEtp+zCUF+w7WWWeRaXRPIVX9Dw=='
-    documentService.checkAccountFormat(acc1, raw).should.equal(false)
+    const raw = rawAcc1NoSig + 'aaa'
+    documentService.checkAccountFormat(raw).should.equal(false)
   })
 
   it('good announce should have good formatting', () => {
     const raw = rawAnn1NoSig + 'pmaU/YYxncMrndd/jEievLz/ArZGeTr24CviFj73tHCigZhuWnDVfKfSgJKYreMEJnqvX4wYu6CWm81f9FG0Aw=='
-    documentService.checkAnnounceFormat(ann1, raw).should.equal(true)
+    documentService.checkAnnounceFormat(raw).should.equal(true)
   })
 
   it('wrong announce should have wrong formatting', () => {
-    const raw = rawAnn1NoSig + 'ApmaU/YYxncMrndd/jEievLz/ArZGeTr24CviFj73tHCigZhuWnDVfKfSgJKYreMEJnqvX4wYu6CWm81f9FG0Aw=='
-    documentService.checkAnnounceFormat(ann1, raw).should.equal(false)
+    const raw = rawAnn1NoSig + 'aaa'
+    documentService.checkAnnounceFormat(raw).should.equal(false)
   })
 
   it('good account should have good signature', () => {
