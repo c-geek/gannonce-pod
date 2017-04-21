@@ -1,0 +1,23 @@
+{
+  "name": "gchange-pod",
+  "version": "0.0.1",
+  "description": "ğchange server pod",
+  "main": "index.js",
+  "repository": "https://github.com/duniter/gchange-pod.git",
+  "author": "mail@cgeek.fr",
+  "license": "AGPLv3",
+  "scripts": {
+    "test": "mocha tests/"
+  },
+  "devDependencies": {
+    "mocha": "^3.2.0",
+    "should": "^11.2.1"
+  },
+  "dependencies": {
+    "co": "^4.6.0",
+    "duniter": "^1.2.2",
+    "duniter-common": "^1.0.0",
+    "q-io": "^1.13.2",
+    "uuid": "^3.0.1"
+  }
+}
