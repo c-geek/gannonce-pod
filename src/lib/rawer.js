@@ -20,7 +20,7 @@ module.exports = {
     for (let i = 0; i < a.links.length; i++) {
       raw += `Links[${i}]: ${a.links[i]}\n`
     }
-    raw += `${a.sig}`
+    raw += `${a.sig || ''}`
     return raw
   },
 
@@ -45,7 +45,7 @@ module.exports = {
     for (let i = 0; i < images.length; i++) {
       raw += `Images[${i}]: ${images[i]}\n`
     }
-    raw += `${a.sig}`
+    raw += `${a.sig || ''}`
     return raw
   }
 }

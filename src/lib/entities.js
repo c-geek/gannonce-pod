@@ -15,11 +15,15 @@ class Account {
     this.links = links.slice() // Copy
     this.sig = sig
   }
+
+  static fromJSON(a) {
+    return new Account(a.pub, a.uuid, a.title, a.desc, a.address, a.logo, a.links, a.sig)
+  }
 }
 
 class Announce {
 
-  constructor(pub, uuid, title, desc, price, fees, type, photos, stock, sig) {
+  constructor(pub, uuid, title, desc, price, fees, type, images, stock, sig) {
     this.pub = pub
     this.uuid = uuid
     this.title = title
@@ -27,9 +31,13 @@ class Announce {
     this.price = price
     this.fees = fees
     this.type = type
-    this.images = photos.slice() // Copy
+    this.images = images.slice() // Copy
     this.stock = stock
     this.sig = sig
+  }
+
+  static fromJSON(a) {
+    return new Announce(a.pub, a.uuid, a.title, a.desc, a.price, a.fees, a.type, a.images, a.stock, a.sig)
   }
 }
 
