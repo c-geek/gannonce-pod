@@ -92,4 +92,18 @@ describe('Validation', () => {
     ann2.title = 'Wrong title'
     documentService.checkAnnounceSignature(ann2).should.equal(false)
   })
+
+  it('account jsonification should be symmetrical', () => {
+    const raw = rawAcc1NoSig + 'vTJVVFRL5PXTtxm5smXeWvfRvVJjKuvKfke9Wz1BQI4Kra0Ljd/dm1cHdQzWU4DF3Vhj7rSAvbHFVI3BNDSZAA=='
+    const json = entities.Account.fromRaw(raw)
+    const raw2 = entities.Account.toRaw(json)
+    raw.should.equal(raw2)
+  })
+
+  it('announce jsonification should be symmetrical', () => {
+    const raw = rawAnn1NoSig + 'pmaU/YYxncMrndd/jEievLz/ArZGeTr24CviFj73tHCigZhuWnDVfKfSgJKYreMEJnqvX4wYu6CWm81f9FG0Aw=='
+    const json = entities.Announce.fromRaw(raw)
+    const raw2 = entities.Announce.toRaw(json)
+    raw.should.equal(raw2)
+  })
 })
