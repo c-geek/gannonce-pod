@@ -1,5 +1,7 @@
 "use strict";
 
-const document = require('../services/document')
+const validation = require('./validation-service')
+const announce = require('./announce-service')
+const account = require('./account-service')
 
-module.exports = { document }
+module.exports = { validation, announce, account }

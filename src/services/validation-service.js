@@ -26,7 +26,7 @@ function CryptoService() {
 
   this.checkAccountSignature = (acc) => checkSignature(acc, Account)
 
-  this.checkAnnounceSignature = (acc) => checkSignature(acc, Announce)
+  this.checkAnnounceSignature = (ann) => checkSignature(ann, Announce)
 
   function checkSignature(entity, Type) {
     const copy = Type.fromJSON(entity)

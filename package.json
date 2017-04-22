@@ -14,10 +14,12 @@
     "should": "^11.2.1"
   },
   "dependencies": {
+    "chai": "^3.5.0",
+    "chai-as-promised": "^6.0.0",
     "co": "^4.6.0",
     "duniter": "^1.2.2",
     "duniter-common": "^1.0.0",
-    "q-io": "^1.13.2",
+    "lokijs": "^1.4.3",
     "uuid": "^3.0.1"
   }
 }
