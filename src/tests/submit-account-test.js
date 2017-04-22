@@ -54,4 +54,46 @@ describe('Account submitting', () => {
     const raw = rawAcc1NoSig + 'vTJVVFRL5PXTtxm5smXeWvfRvVJjKuvKfke9Wz1BQI4Kra0Ljd/dm1cHdQzWU4DF3Vhj7rSAvbHFVI3BNDSZAA=='
     yield gchange.services.account.submit(raw)
   }))
+
+  it('should exist 1 account', () => co(function*() {
+    yield expect(gchange.services.account.listAll()).to.eventually.have.length(1)
+  }))
+
+  it('should exist 2 accounts', () => co(function*() {
+    let rawAcc2 = ''
+    rawAcc2 += 'Version: 1\n'
+    rawAcc2 += 'Document: Account\n'
+    rawAcc2 += 'Currency: g1\n'
+    rawAcc2 += 'Pub: HgTTJLAQ5sqfknMq7yLPZbehtuLSsKj9CxWN7k8QvYJd\n'
+    rawAcc2 += 'Uuid: uh97r59d-4689-45b1-92b8-870097effb1d\n'
+    rawAcc2 += 'Title: Account 1 with 10 chars\n'
+    rawAcc2 += 'Desc: A fake account for tests\n'
+    rawAcc2 += 'Address: In memory (with 10 chars)\n'
+    rawAcc2 += 'Logo: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAABHNCSVQICAgIfAhkiAAAAg5JREFUKJE9kstLVGEAR3/fw/lG5502M6ChSJhETkFI0qoHWkqkCeNmFm4sMRD8Q2oV4aJNGwkMMpB2ZYsiBqeVc7UswkonvHPvOI87c1/eR4seZ3vO8gB/4YyIudvdSxsrUwVVmjfUnfvG29WZwtxU7xJnRPzrCAAk47znxfLUq5HxoQy4Dt/1/khGAUcgv75ZnF58PVGuOQeEMyI2nk5vjoyfzhxrDeiqgvLRMd5/NDE5GkE0nQRvDyO/li9eW3g3zGbHehbnF6/M2loNpiZDdMVQrVE4bhAnTsUR8BXA4ejpT6f2pW8Vmr1xJudZLVj1CngigoamocNRECYyHj/aBm8PwdZL8CwZ2evJHNlbvWV0DSSDNlWwpzogah0DmQSocGDJVYhuD7ZmgGrdqHxRTO42fsFRVHiJKg5/avgqWTh7tQ/EFwiJOhzNA20LgzYU+HoLtLhzJJFmHTDbcOliFL3BJtyigWOpAX27BH1fB6wo3KaJrV1bYtQmobEL4ZvMC4OlOJKdAbT2a2iVm2h1REASUfBqDLaq+Q9XKw8Ip0Q8v9tXuDwcHKKdabD+AAyzBM9nEPQkqAy4cgkfCmYx++T7MPN8uG8+NdfPR0KjqaCV8koaWD0FJnO4P8qwFM3PFwzp3rODiabtVcn/NSgRdwbjC5OZWG4wLc4BwO6hJb3cqq+sfa4tO55vAcBvXJrz3umEwZcAAAAASUVORK5CYII=\n'
+    rawAcc2 += 'Links[0]: https://duniter.org\n'
+    rawAcc2 += 'Links[1]: https://duniter.org/fr\n'
+    rawAcc2 += 'Links[2]: https://duniter.org/en\n'
+    rawAcc2 += user1.signSync(rawAcc2)
+    yield gchange.services.account.submit(rawAcc2)
+    yield expect(gchange.services.account.listAll()).to.eventually.have.length(2)
+  }))
+
+  it('should exist 2 accounts after an update', () => co(function*() {
+    let rawAcc2 = ''
+    rawAcc2 += 'Version: 1\n'
+    rawAcc2 += 'Document: Account\n'
+    rawAcc2 += 'Currency: g1\n'
+    rawAcc2 += 'Pub: HgTTJLAQ5sqfknMq7yLPZbehtuLSsKj9CxWN7k8QvYJd\n'
+    rawAcc2 += 'Uuid: d34f195c-4689-45b1-92b8-870097effb1d\n'
+    rawAcc2 += 'Title: Account 1 (modified)\n'
+    rawAcc2 += 'Desc: A fake account for tests\n'
+    rawAcc2 += 'Address: In memory (with 10 chars)\n'
+    rawAcc2 += 'Logo: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAABHNCSVQICAgIfAhkiAAAAg5JREFUKJE9kstLVGEAR3/fw/lG5502M6ChSJhETkFI0qoHWkqkCeNmFm4sMRD8Q2oV4aJNGwkMMpB2ZYsiBqeVc7UswkonvHPvOI87c1/eR4seZ3vO8gB/4YyIudvdSxsrUwVVmjfUnfvG29WZwtxU7xJnRPzrCAAk47znxfLUq5HxoQy4Dt/1/khGAUcgv75ZnF58PVGuOQeEMyI2nk5vjoyfzhxrDeiqgvLRMd5/NDE5GkE0nQRvDyO/li9eW3g3zGbHehbnF6/M2loNpiZDdMVQrVE4bhAnTsUR8BXA4ejpT6f2pW8Vmr1xJudZLVj1CngigoamocNRECYyHj/aBm8PwdZL8CwZ2evJHNlbvWV0DSSDNlWwpzogah0DmQSocGDJVYhuD7ZmgGrdqHxRTO42fsFRVHiJKg5/avgqWTh7tQ/EFwiJOhzNA20LgzYU+HoLtLhzJJFmHTDbcOliFL3BJtyigWOpAX27BH1fB6wo3KaJrV1bYtQmobEL4ZvMC4OlOJKdAbT2a2iVm2h1REASUfBqDLaq+Q9XKw8Ip0Q8v9tXuDwcHKKdabD+AAyzBM9nEPQkqAy4cgkfCmYx++T7MPN8uG8+NdfPR0KjqaCV8koaWD0FJnO4P8qwFM3PFwzp3rODiabtVcn/NSgRdwbjC5OZWG4wLc4BwO6hJb3cqq+sfa4tO55vAcBvXJrz3umEwZcAAAAASUVORK5CYII=\n'
+    rawAcc2 += 'Links[0]: https://duniter.org\n'
+    rawAcc2 += 'Links[1]: https://duniter.org/fr\n'
+    rawAcc2 += 'Links[2]: https://duniter.org/en\n'
+    rawAcc2 += user1.signSync(rawAcc2)
+    yield gchange.services.account.submit(rawAcc2)
+    yield expect(gchange.services.account.listAll()).to.eventually.have.length(2)
+  }))
 })

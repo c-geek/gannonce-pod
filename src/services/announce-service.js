@@ -29,4 +29,6 @@ function AnnounceService(dao, services) {
     yield dao.updateOrCreateAnnounce(json)
     return json
   })
+
+  this.listAll = () => dao.listAllAnnounces()
 }

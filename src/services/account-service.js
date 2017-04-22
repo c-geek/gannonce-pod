@@ -24,4 +24,6 @@ function AccountService(dao, services) {
     yield dao.updateOrCreateAccount(json)
     return json
   })
+
+  this.listAll = () => dao.listAllAccounts()
 }
