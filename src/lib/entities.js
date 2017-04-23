@@ -10,10 +10,7 @@ class Account {
     this.title = title
     this.desc = desc
     this.address = address
-    this.logo = {
-      buffer: new Buffer(logo.buffer),
-      extension: logo.extension
-    }
+    this.logo = logo
     this.links = links.slice() // Copy
     this.sig = sig
   }
@@ -28,7 +25,7 @@ class Account {
     const title =   raw.match(/Title: (.{10,100})\nDesc: /)
     const desc =    raw.match(/Desc: (.{10,10000})\nAddress: /)
     const address = raw.match(/Address: (.{10,100})\nLogo: /)
-    const logo =    raw.match(/Logo: data:image\/(png|jpeg);base64,([a-zA-Z0-9/+=]{1,160000})\n/)
+    const logo =    raw.match(/Logo: (data:image\/(png|jpeg);base64,[a-zA-Z0-9/+=]{1,160000})\n/)
     const sig =     raw.match(/\n([A-Za-z0-9+\\/=]{87,88})$/)
     const acc = {
       pub: pub && pub[1],
@@ -37,10 +34,7 @@ class Account {
       desc: desc && desc[1],
       address: address && address[1],
       sig: sig && sig[1],
-      logo: {
-        buffer: logo && Buffer.from(logo[2], 'base64'),
-        extension: logo && logo[1]
-      },
+      logo: logo && logo[1],
       links: []
     }
     for (let i = 0; i < 10; i++) {
@@ -72,6 +66,20 @@ class Announce {
     this.sig = sig
   }
 
+  images2files() {
+    const buffers = []
+    for (const img of this.images) {
+      const match = img.match(new RegExp("data:image\/(png|jpeg);base64,([a-zA-Z0-9/+=]{1,160000})\n"))
+      if (match) {
+        buffers.push({
+          buffer: match && Buffer.from(match[2], 'base64'),
+          extension: match && match[1]
+        })
+      }
+    }
+    return buffers
+  }
+
   static fromJSON(a) {
     return new Announce(a.pub, a.uuid, a.title, a.desc, a.price, a.fees, a.type, a.images, a.stock, a.sig)
   }
@@ -99,12 +107,9 @@ class Announce {
       images: []
     }
     for (let i = 0; i < 10; i++) {
-      const match = raw.match(new RegExp("Images\\[" + i + "\\]: data:image\/(png|jpeg);base64,([a-zA-Z0-9/+=]{1,160000})\n"))
+      const match = raw.match(new RegExp("Images\\[" + i + "\\]: (data:image\/(png|jpeg);base64,[a-zA-Z0-9/+=]{1,160000})\n"))
       if (match) {
-        acc.images.push({
-          buffer: match && Buffer.from(match[2], 'base64'),
-          extension: match && match[1]
-        })
+        acc.images.push(match && match[1])
       }
     }
     return acc
