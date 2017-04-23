@@ -3,13 +3,13 @@
 const services = require('../services')
 const dao = require('../dao')
 
-module.exports = function Instance(duniterNode) {
-  return new GchangeInstance(duniterNode)
+module.exports = function Instance(duniterNode, dbName) {
+  return new GchangeInstance(duniterNode, dbName)
 }
 
-function GchangeInstance(duniterNode) {
+function GchangeInstance(duniterNode, dbName) {
 
-  this.dao = new dao.LokiJSDao('gchange')
+  this.dao = new dao.LokiJSDao(dbName)
   this.services = {}
   this.services.validation = services.validation()
   this.services.account = services.account(this.dao, this.services)

@@ -2,18 +2,45 @@
 
 const co = require('co')
 const loki = require('lokijs')
+const mem = new loki.LokiMemoryAdapter();
+const file = new loki.LokiFsAdapter();
 
 module.exports = function LokiJSDao(name) {
 
-  const db = new loki(name)
-  const accounts = db.addCollection('accounts')
-  const announces = db.addCollection('announces')
+  const dbName = name ? name : ':memory'
+  const dbAdapter = name ? file : mem
+  const db = new loki(dbName, {
+    autosave: true,
+    autoloadCallback : loadHandler,
+    autosaveInterval: 100,
+    autoload: true,
+    adapter: dbAdapter
+  })
+
+  let loaded
+  let loadedPromise = new Promise((res) => loaded = res)
+
+  let accounts, announces
+
+  function loadHandler() {
+    accounts = db.getCollection('accounts')
+    announces = db.getCollection('accounts')
+    if (!accounts) {
+      accounts = db.addCollection('accounts')
+    }
+    if (!announces) {
+      announces = db.addCollection('announces')
+    }
+    loaded()
+  }
 
   this.getAccountByPubkey = (pub) => co(function*() {
+    yield loadedPromise
     return accounts.find({ pub })[0]
   })
 
   this.updateOrCreateAccount = (acc) => co(function*() {
+    yield loadedPromise
     const existing = accounts.find({ uuid: acc.uuid })[0]
     if (existing) {
       existing.title = acc.title
@@ -29,6 +56,7 @@ module.exports = function LokiJSDao(name) {
   })
 
   this.updateOrCreateAnnounce = (ann) => co(function*() {
+    yield loadedPromise
     const existing = announces.find({ uuid: ann.uuid })[0]
     if (existing) {
       existing.title = ann.title
@@ -47,14 +75,17 @@ module.exports = function LokiJSDao(name) {
   })
 
   this.listAllAccounts = () => co(function*() {
+    yield loadedPromise
     return accounts.find()
   })
 
   this.listAllAnnounces = () => co(function*() {
+    yield loadedPromise
     return announces.find()
   })
 
   this.findAnnounces = (pattern) => co(function*() {
+    yield loadedPromise
     const cleanedPattern = pattern
       .replace(/([$\[\]()+*?!{}|])/g, '\\$1')
     return announces.find({
@@ -66,10 +97,12 @@ module.exports = function LokiJSDao(name) {
   })
 
   this.getAnnounce = (uuid) => co(function*() {
+    yield loadedPromise
     return announces.find({ uuid })[0]
   })
 
   this.getAccount = (pub) => co(function*() {
+    yield loadedPromise
     return accounts.find({ pub })[0]
   })
 }
