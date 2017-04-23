@@ -64,4 +64,12 @@ module.exports = function LokiJSDao(name) {
       ]
     })
   })
+
+  this.getAnnounce = (uuid) => co(function*() {
+    return announces.find({ uuid })[0]
+  })
+
+  this.getAccount = (pub) => co(function*() {
+    return accounts.find({ pub })[0]
+  })
 }

@@ -30,4 +30,6 @@ function AccountService(dao, services) {
   })
 
   this.listAll = () => dao.listAllAccounts()
+
+  this.getAccount = (pub) => dao.getAccount(pub)
 }

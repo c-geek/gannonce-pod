@@ -117,4 +117,20 @@ describe('Announce listing', () => {
   it('should exist 3 announces about "special (!?"', () => expect(gchange.services.announce.search('special (!?')).to.eventually.have.length(1))
   it('should exist 3 announces about "$[]()+*?!{}|"', () => expect(gchange.services.announce.search('$[]()+*?!{}|')).to.eventually.have.length(1))
   it('should exist 2 announces about "ğ"', () => expect(gchange.services.announce.search('ğ')).to.eventually.have.length(2))
+
+  it('should be possible to get announce "98745618-4689-45b1-92b8-870097effb1d"', () => co(function*() {
+    const ann = yield gchange.services.announce.getAnnounce('98745618-4689-45b1-92b8-870097effb1d')
+    should.exist(ann)
+  }))
+
+  it('should not exist announce "55555555-4689-45b1-92b8-870097effb1d"', () => co(function*() {
+    const ann = yield gchange.services.announce.getAnnounce('55555555-4689-45b1-92b8-870097effb1d')
+    should.not.exist(ann)
+  }))
+
+  it('should be possible to get account of announce "98745618-4689-45b1-92b8-870097effb1d"', () => co(function*() {
+    const ann = yield gchange.services.announce.getAnnounce('98745618-4689-45b1-92b8-870097effb1d')
+    const acc = yield gchange.services.account.getAccount(ann.pub)
+    should.exist(acc)
+  }))
 })
