@@ -21,6 +21,10 @@ function AccountService(dao, services) {
       throw constants.ERRORS.WRONG_SIGNATURE
     }
     // Authenticated document, legit. Process.
+    const isAuthorizedToCreateAnAccount = yield services.duniter.hasAtLeastOneG1(json.pub)
+    if (!isAuthorizedToCreateAnAccount) {
+      throw constants.ERRORS.UNAUTHORIZED_ACCOUNT_CREATION
+    }
     yield dao.updateOrCreateAccount(json)
     return json
   })

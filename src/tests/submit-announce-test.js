@@ -12,6 +12,7 @@ const rawer = require('../lib/rawer')
 const common = require('duniter-common')
 const entities = require('../lib/entities')
 const instance = require('../lib/instance')
+const fakeServer = require('./lib/fake-server')
 
 let acc1Sig, ann1Sig, rawAcc1NoSig = '', rawAnn1NoSig = '', gchange
 
@@ -23,7 +24,7 @@ let user1 = common.keyring.Key(
 describe('Announce submitting', () => {
 
   before(() => co(function*() {
-    gchange = instance()
+    gchange = instance(fakeServer)
     // Mock account 1
     rawAcc1NoSig += 'Version: 1\n'
     rawAcc1NoSig += 'Document: Account\n'

@@ -6,24 +6,45 @@ const expect = chai.expect;
 const chaiAsPromised = require('chai-as-promised');
 chai.use(chaiAsPromised);
 
+const _ = require('underscore')
 const path = require('path')
 const co = require('co')
 const rawer = require('../lib/rawer')
 const common = require('duniter-common')
+const bma = require('duniter-bma').duniter.methods.bma;
 const entities = require('../lib/entities')
 const instance = require('../lib/instance')
 
-let acc1Sig, rawAcc1NoSig = '', gchange
+// Duniter Testing Tools
+const toolbox = require('duniter/test/integration/tools/toolbox');
+const user      = require('duniter/test/integration/tools/user');
 
-let user1 = common.keyring.Key(
-  'HgTTJLAQ5sqfknMq7yLPZbehtuLSsKj9CxWN7k8QvYJd',
-  '51w4fEShBk1jCMauWu4mLpmDVfHksKmWcygpxriqCEZizbtERA6de4STKRkQBpxmMUwsKXRjSzuQ8ECwmqN1u2DP'
-)
+let acc1Sig, rawAcc1NoSig = '', gchange, duniterNode
+
+const i1pair = { pub: 'HgTTJLAQ5sqfknMq7yLPZbehtuLSsKj9CxWN7k8QvYJd', sec: '51w4fEShBk1jCMauWu4mLpmDVfHksKmWcygpxriqCEZizbtERA6de4STKRkQBpxmMUwsKXRjSzuQ8ECwmqN1u2DP'};
+const i2pair = { pub: '2LvDg21dVXvetTD9GdkPLURavLYEqP3whauvPWX4c2qc', sec: '2HuRLWgKgED1bVio1tdpeXrf7zuUszv1yPHDsDj7kcMC4rVSN9RC58ogjtKNfTbH1eFz7rn38U1PywNs3m6Q7UxE'};
+
+let user1 = common.keyring.Key(i1pair.pub, i1pair.sec)
+
+const start = 1487000000;
 
 describe('Account submitting', () => {
 
   before(() => co(function*() {
-    gchange = instance()
+    duniterNode = toolbox.server(_.extend({
+      memory: true,
+      pair: i1pair,
+      currency: 'DUN',
+      sigQty: 1,
+      udTime0: start,
+      udReevalTime0: start,
+      ud0: 100,
+      dt: 1,
+      dtReeval: 1,
+      medianTimeBlocks: 1,
+      avgGenTime: 300
+    }, {}))
+    gchange = instance(duniterNode)
     // Mock account 1
     rawAcc1NoSig += 'Version: 1\n'
     rawAcc1NoSig += 'Document: Account\n'
@@ -38,6 +59,17 @@ describe('Account submitting', () => {
     rawAcc1NoSig += 'Links[1]: https://duniter.org/fr\n'
     rawAcc1NoSig += 'Links[2]: https://duniter.org/en\n'
     acc1Sig = user1.signSync(rawAcc1NoSig)
+
+    yield duniterNode.initWithDAL().then(bma).then((bmapi) => bmapi.openConnections())
+    const i1 = user('idty1', i1pair, { server: duniterNode })
+    const i2 = user('idty2', i2pair, { server: duniterNode })
+    yield i1.createIdentity()
+    yield i2.createIdentity()
+    yield i1.cert(i2)
+    yield i2.cert(i1)
+    yield i1.join()
+    yield i2.join()
+    yield duniterNode.commit()
   }))
 
   it('account with wrong format should be rejected', () => co(function*() {
@@ -50,7 +82,13 @@ describe('Account submitting', () => {
     yield expect(gchange.services.account.submit(raw)).to.be.rejectedWith('Wrong signature')
   }))
 
+  it('account with good signature but no money should be rejected', () => co(function*() {
+    const raw = rawAcc1NoSig + 'vTJVVFRL5PXTtxm5smXeWvfRvVJjKuvKfke9Wz1BQI4Kra0Ljd/dm1cHdQzWU4DF3Vhj7rSAvbHFVI3BNDSZAA=='
+    yield expect(gchange.services.account.submit(raw)).to.be.rejectedWith('The account must own at least 1 Ğ1 to be created')
+  }))
+
   it('account with good signature should be resolved', () => co(function*() {
+    yield duniterNode.commit()
     const raw = rawAcc1NoSig + 'vTJVVFRL5PXTtxm5smXeWvfRvVJjKuvKfke9Wz1BQI4Kra0Ljd/dm1cHdQzWU4DF3Vhj7rSAvbHFVI3BNDSZAA=='
     yield gchange.services.account.submit(raw)
   }))

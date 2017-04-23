@@ -10,6 +10,7 @@
     "test": "mocha tests/"
   },
   "devDependencies": {
+    "duniter-bma": "^1.1.0",
     "mocha": "^3.2.0",
     "should": "^11.2.1"
   },
@@ -20,6 +21,7 @@
     "duniter": "^1.2.2",
     "duniter-common": "^1.0.0",
     "lokijs": "^1.4.3",
+    "underscore": "^1.8.3",
     "uuid": "^3.0.1"
   }
 }
