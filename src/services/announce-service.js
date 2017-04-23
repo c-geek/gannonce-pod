@@ -31,4 +31,6 @@ function AnnounceService(dao, services) {
   })
 
   this.listAll = () => dao.listAllAnnounces()
+
+  this.search = (pattern) => dao.findAnnounces(pattern)
 }

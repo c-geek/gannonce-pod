@@ -53,4 +53,15 @@ module.exports = function LokiJSDao(name) {
   this.listAllAnnounces = () => co(function*() {
     return announces.find()
   })
+
+  this.findAnnounces = (pattern) => co(function*() {
+    const cleanedPattern = pattern
+      .replace(/([$\[\]()+*?!{}|])/g, '\\$1')
+    return announces.find({
+      $or: [
+        { title: { $regex: new RegExp(cleanedPattern)} },
+        { desc: { $regex: new RegExp(cleanedPattern)} }
+      ]
+    })
+  })
 }
