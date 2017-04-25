@@ -24,7 +24,7 @@ class Account {
     const uuid =    raw.match(/Uuid: ([0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12})\nTitle: /)
     const title =   raw.match(/Title: (.{10,100})\nDesc: /)
     const desc =    raw.match(/Desc: (.{10,10000})\nAddress: /)
-    const address = raw.match(/Address: (.{10,100})\nLogo: /)
+    const address = raw.match(/Address: (.{4,100})\nLogo: /)
     const logo =    raw.match(/Logo: (data:image\/(png|jpeg);base64,[a-zA-Z0-9/+=]{1,160000})\n/)
     const sig =     raw.match(/\n([A-Za-z0-9+\\/=]{87,88})$/)
     const acc = {
@@ -34,7 +34,7 @@ class Account {
       desc: desc && desc[1],
       address: address && address[1],
       sig: sig && sig[1],
-      logo: logo && logo[1],
+      logo: (logo && logo[1]) || '',
       links: []
     }
     for (let i = 0; i < 10; i++) {

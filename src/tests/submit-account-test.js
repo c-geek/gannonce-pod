@@ -25,6 +25,7 @@ const i1pair = { pub: 'HgTTJLAQ5sqfknMq7yLPZbehtuLSsKj9CxWN7k8QvYJd', sec: '51w4
 const i2pair = { pub: '2LvDg21dVXvetTD9GdkPLURavLYEqP3whauvPWX4c2qc', sec: '2HuRLWgKgED1bVio1tdpeXrf7zuUszv1yPHDsDj7kcMC4rVSN9RC58ogjtKNfTbH1eFz7rn38U1PywNs3m6Q7UxE'};
 
 let user1 = common.keyring.Key(i1pair.pub, i1pair.sec)
+let user2 = common.keyring.Key(i2pair.pub, i2pair.sec)
 
 const start = 1487000000;
 
@@ -102,7 +103,7 @@ describe('Account submitting', () => {
     rawAcc2 += 'Version: 1\n'
     rawAcc2 += 'Document: Account\n'
     rawAcc2 += 'Currency: g1\n'
-    rawAcc2 += 'Pub: HgTTJLAQ5sqfknMq7yLPZbehtuLSsKj9CxWN7k8QvYJd\n'
+    rawAcc2 += 'Pub: 2LvDg21dVXvetTD9GdkPLURavLYEqP3whauvPWX4c2qc\n'
     rawAcc2 += 'Uuid: uh97r59d-4689-45b1-92b8-870097effb1d\n'
     rawAcc2 += 'Title: Account 1 with 10 chars\n'
     rawAcc2 += 'Desc: A fake account for tests\n'
@@ -111,7 +112,7 @@ describe('Account submitting', () => {
     rawAcc2 += 'Links[0]: https://duniter.org\n'
     rawAcc2 += 'Links[1]: https://duniter.org/fr\n'
     rawAcc2 += 'Links[2]: https://duniter.org/en\n'
-    rawAcc2 += user1.signSync(rawAcc2)
+    rawAcc2 += user2.signSync(rawAcc2)
     yield gchange.services.account.submit(rawAcc2)
     yield expect(gchange.services.account.listAll()).to.eventually.have.length(2)
   }))
@@ -133,5 +134,41 @@ describe('Account submitting', () => {
     rawAcc2 += user1.signSync(rawAcc2)
     yield gchange.services.account.submit(rawAcc2)
     yield expect(gchange.services.account.listAll()).to.eventually.have.length(2)
+  }))
+
+  it('should not be possible to modify an account we do not own', () => co(function*() {
+    // Mock account 2
+    let rawAcc3 = 'Version: 1\n'
+    rawAcc3 += 'Document: Account\n'
+    rawAcc3 += 'Currency: g1\n'
+    rawAcc3 += 'Pub: 2LvDg21dVXvetTD9GdkPLURavLYEqP3whauvPWX4c2qc\n'
+    rawAcc3 += 'Uuid: d34f195c-4689-45b1-92b8-870097effb1d\n'
+    rawAcc3 += 'Title: Account 1 with 10 chars\n'
+    rawAcc3 += 'Desc: A fake account for tests\n'
+    rawAcc3 += 'Address: In memory (with 10 chars)\n'
+    rawAcc3 += 'Logo: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAABHNCSVQICAgIfAhkiAAAAg5JREFUKJE9kstLVGEAR3/fw/lG5502M6ChSJhETkFI0qoHWkqkCeNmFm4sMRD8Q2oV4aJNGwkMMpB2ZYsiBqeVc7UswkonvHPvOI87c1/eR4seZ3vO8gB/4YyIudvdSxsrUwVVmjfUnfvG29WZwtxU7xJnRPzrCAAk47znxfLUq5HxoQy4Dt/1/khGAUcgv75ZnF58PVGuOQeEMyI2nk5vjoyfzhxrDeiqgvLRMd5/NDE5GkE0nQRvDyO/li9eW3g3zGbHehbnF6/M2loNpiZDdMVQrVE4bhAnTsUR8BXA4ejpT6f2pW8Vmr1xJudZLVj1CngigoamocNRECYyHj/aBm8PwdZL8CwZ2evJHNlbvWV0DSSDNlWwpzogah0DmQSocGDJVYhuD7ZmgGrdqHxRTO42fsFRVHiJKg5/avgqWTh7tQ/EFwiJOhzNA20LgzYU+HoLtLhzJJFmHTDbcOliFL3BJtyigWOpAX27BH1fB6wo3KaJrV1bYtQmobEL4ZvMC4OlOJKdAbT2a2iVm2h1REASUfBqDLaq+Q9XKw8Ip0Q8v9tXuDwcHKKdabD+AAyzBM9nEPQkqAy4cgkfCmYx++T7MPN8uG8+NdfPR0KjqaCV8koaWD0FJnO4P8qwFM3PFwzp3rODiabtVcn/NSgRdwbjC5OZWG4wLc4BwO6hJb3cqq+sfa4tO55vAcBvXJrz3umEwZcAAAAASUVORK5CYII=\n'
+    rawAcc3 += 'Links[0]: https://duniter.org\n'
+    rawAcc3 += 'Links[1]: https://duniter.org/fr\n'
+    rawAcc3 += 'Links[2]: https://duniter.org/en\n'
+    rawAcc3 += user2.signSync(rawAcc3)
+    yield expect(gchange.services.account.submit(rawAcc3)).to.be.rejectedWith('This account belong to another pubkey')
+  }))
+
+  it('should not be possible to create 2 accounts by pubkey', () => co(function*() {
+    // Mock account 2
+    let rawAcc3 = 'Version: 1\n'
+    rawAcc3 += 'Document: Account\n'
+    rawAcc3 += 'Currency: g1\n'
+    rawAcc3 += 'Pub: 2LvDg21dVXvetTD9GdkPLURavLYEqP3whauvPWX4c2qc\n'
+    rawAcc3 += 'Uuid: eeeeeeee-4689-45b1-92b8-870097effb1d\n'
+    rawAcc3 += 'Title: Trying to have another account\n'
+    rawAcc3 += 'Desc: A fake account for tests\n'
+    rawAcc3 += 'Address: In memory (with 10 chars)\n'
+    rawAcc3 += 'Logo: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAABHNCSVQICAgIfAhkiAAAAg5JREFUKJE9kstLVGEAR3/fw/lG5502M6ChSJhETkFI0qoHWkqkCeNmFm4sMRD8Q2oV4aJNGwkMMpB2ZYsiBqeVc7UswkonvHPvOI87c1/eR4seZ3vO8gB/4YyIudvdSxsrUwVVmjfUnfvG29WZwtxU7xJnRPzrCAAk47znxfLUq5HxoQy4Dt/1/khGAUcgv75ZnF58PVGuOQeEMyI2nk5vjoyfzhxrDeiqgvLRMd5/NDE5GkE0nQRvDyO/li9eW3g3zGbHehbnF6/M2loNpiZDdMVQrVE4bhAnTsUR8BXA4ejpT6f2pW8Vmr1xJudZLVj1CngigoamocNRECYyHj/aBm8PwdZL8CwZ2evJHNlbvWV0DSSDNlWwpzogah0DmQSocGDJVYhuD7ZmgGrdqHxRTO42fsFRVHiJKg5/avgqWTh7tQ/EFwiJOhzNA20LgzYU+HoLtLhzJJFmHTDbcOliFL3BJtyigWOpAX27BH1fB6wo3KaJrV1bYtQmobEL4ZvMC4OlOJKdAbT2a2iVm2h1REASUfBqDLaq+Q9XKw8Ip0Q8v9tXuDwcHKKdabD+AAyzBM9nEPQkqAy4cgkfCmYx++T7MPN8uG8+NdfPR0KjqaCV8koaWD0FJnO4P8qwFM3PFwzp3rODiabtVcn/NSgRdwbjC5OZWG4wLc4BwO6hJb3cqq+sfa4tO55vAcBvXJrz3umEwZcAAAAASUVORK5CYII=\n'
+    rawAcc3 += 'Links[0]: https://duniter.org\n'
+    rawAcc3 += 'Links[1]: https://duniter.org/fr\n'
+    rawAcc3 += 'Links[2]: https://duniter.org/en\n'
+    rawAcc3 += user2.signSync(rawAcc3)
+    yield expect(gchange.services.account.submit(rawAcc3)).to.be.rejectedWith('Only one account per pubkey is allowed')
   }))
 })

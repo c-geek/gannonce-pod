@@ -26,6 +26,11 @@ function AnnounceService(dao, services) {
       throw constants.ERRORS.THE_ACCOUNT_MUST_EXIST
     }
     // The account exist, now save the changes.
+    const ann = yield dao.getAnnounce(json.uuid)
+    if (ann && ann.pub !== json.pub) {
+      throw constants.ERRORS.NOT_THE_ANNOUNCE_OWNER
+    }
+    // This publisher is the owner of this announce, continue.
     yield dao.updateOrCreateAnnounce(json)
     return json
   })
