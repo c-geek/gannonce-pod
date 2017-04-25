@@ -1,15 +1,21 @@
 "use strict";
 
 const services = require('../services')
-const dao = require('../dao')
+const DAO = require('../dao')
 
-module.exports = function Instance(duniterNode, dbName) {
-  return new GchangeInstance(duniterNode, dbName)
+module.exports = function Instance(duniterNode, dao) {
+  return new GchangeInstance(duniterNode, dao)
 }
 
-function GchangeInstance(duniterNode, dbName) {
+function GchangeInstance(duniterNode, dao) {
 
-  this.dao = new dao.LokiJSDao(dbName)
+  if (!dao) {
+    // Default: in-memory LokiJS Dao
+    dao = new DAO.LokiJSDao()
+  }
+
+  this.duniterNode = duniterNode
+  this.dao = dao
   this.services = {}
   this.services.validation = services.validation()
   this.services.account = services.account(this.dao, this.services)

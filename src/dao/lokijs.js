@@ -5,15 +5,16 @@ const loki = require('lokijs')
 const mem = new loki.LokiMemoryAdapter();
 const file = new loki.LokiFsAdapter();
 
-module.exports = function LokiJSDao(name) {
+module.exports = function LokiJSDao(path) {
 
-  const dbName = name ? name : ':memory'
-  const dbAdapter = name ? file : mem
+  const dbName = 'gchange.db'
+  const autosave = !!path
+  const dbAdapter = path ? file : mem
   const db = new loki(dbName, {
-    autosave: true,
+    autosave,
+    autoload: true,
     autoloadCallback : loadHandler,
     autosaveInterval: 100,
-    autoload: true,
     adapter: dbAdapter
   })
 
@@ -41,7 +42,8 @@ module.exports = function LokiJSDao(name) {
 
   this.updateOrCreateAccount = (acc) => co(function*() {
     yield loadedPromise
-    const existing = accounts.find({ uuid: acc.uuid })[0]
+    let existing = accounts.find({ uuid: acc.uuid })[0]
+    existing = existing || accounts.find({ pub: acc.pub })[0]
     if (existing) {
       existing.title = acc.title
       existing.desc = acc.desc
@@ -104,5 +106,10 @@ module.exports = function LokiJSDao(name) {
   this.getAccount = (pub) => co(function*() {
     yield loadedPromise
     return accounts.find({ pub })[0]
+  })
+
+  this.getAccountByUuid = (uuid) => co(function*() {
+    yield loadedPromise
+    return accounts.find({ uuid })[0]
   })
 }

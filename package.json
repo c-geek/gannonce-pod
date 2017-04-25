@@ -15,11 +15,14 @@
     "should": "^11.2.1"
   },
   "dependencies": {
+    "body-parser": "^1.17.1",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
     "co": "^4.6.0",
+    "cors": "^2.8.3",
     "duniter": "^1.2.2",
     "duniter-common": "^1.0.0",
+    "express": "^4.15.2",
     "lokijs": "^1.4.3",
     "underscore": "^1.8.3",
     "uuid": "^3.0.1"

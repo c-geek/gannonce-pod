@@ -1,0 +1,97 @@
+#!/usr/bin/env node
+"use strict";
+
+if (process.argv.length === 2) {
+  process.argv.push('gchange')
+}
+
+const co = require('co')
+const _ = require('underscore')
+const duniter = require('duniter')
+const http      = require('http')
+const express   = require('express')
+const bodyParser = require('body-parser')
+const cors = require('cors')
+const gchange = require('../index')
+
+/****************************************
+ * TECHNICAL CONFIGURATION
+ ***************************************/
+
+// Default Duniter node's database
+const HOME_DUNITER_DATA_FOLDER = 'gchange';
+
+// Default host on which WoT UI is available
+const DEFAULT_HOST = 'localhost';
+
+// Default port on which WoT UI is available
+const DEFAULT_PORT = 8600;
+
+/****************************************
+ * SPECIALIZATION
+ ***************************************/
+
+const stack = duniter.statics.autoStack([{
+  name: HOME_DUNITER_DATA_FOLDER,
+  required: {
+
+    duniter: {
+
+      cli: [{
+        name: 'gchange [host] [port]',
+        desc: 'Starts ğchange node',
+
+        // Disables Duniter node's logs
+        // logs: false,
+
+        onDatabaseExecute: (duniterServer, conf, program, params, startServices) => co(function*() {
+
+          /****************************************
+           * WHEN DUNITER IS LOADED, EXECUTE GCHANGE
+           ***************************************/
+          const SERVER_HOST = params[0] || DEFAULT_HOST;
+          const SERVER_PORT = parseInt(params[1]) || DEFAULT_PORT;
+
+          /****************************************
+           * SPECIALISATION
+           ***************************************/
+
+          const app = express();
+
+          app.use(cors());
+
+          app.use(bodyParser.urlencoded({
+            extended: true
+          }));
+          app.use(bodyParser.json());
+
+          // ğchange stuff
+          const dao = require('../src/dao')
+          const instance = gchange.server(duniterServer, new dao.LokiJSDao(duniterServer.home))
+          gchange.http_api(app, instance)
+
+          const httpServer = http.createServer(app);
+          httpServer.listen(SERVER_PORT, SERVER_HOST);
+          console.log("Serveur web disponible a l'adresse http://%s:%s", SERVER_HOST, SERVER_PORT);
+
+          // Duniter node start
+          yield startServices()
+
+          return new Promise((res) => null)
+        })
+      }]
+    }
+  }
+}]);
+
+co(function*() {
+  if (!process.argv.includes('--mdb')) {
+    // We use the default database
+    process.argv.push('--mdb');
+    process.argv.push(HOME_DUNITER_DATA_FOLDER);
+  }
+  // Execute our program
+  yield stack.executeStack(process.argv);
+  // End
+  process.exit();
+});
