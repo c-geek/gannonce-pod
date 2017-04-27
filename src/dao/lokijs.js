@@ -25,7 +25,7 @@ module.exports = function LokiJSDao(path) {
 
   function loadHandler() {
     accounts = db.getCollection('accounts')
-    announces = db.getCollection('accounts')
+    announces = db.getCollection('announces')
     if (!accounts) {
       accounts = db.addCollection('accounts')
     }
@@ -86,6 +86,20 @@ module.exports = function LokiJSDao(path) {
     return announces.find()
   })
 
+  this.listAllAnnouncesWithStock = () => co(function*() {
+    yield loadedPromise
+    const res = announces.find({ stock: { $gt: 0 }})
+    return res.map(a => {
+      a.account = accounts.find({ pub: a.pub })[0]
+      return a
+    })
+  })
+
+  this.listAnnouncesForPubkey = (pub) => co(function*() {
+    yield loadedPromise
+    return announces.find({ pub })
+  })
+
   this.findAnnounces = (pattern) => co(function*() {
     yield loadedPromise
     const cleanedPattern = pattern
@@ -100,7 +114,11 @@ module.exports = function LokiJSDao(path) {
 
   this.getAnnounce = (uuid) => co(function*() {
     yield loadedPromise
-    return announces.find({ uuid })[0]
+    const ann = announces.find({ uuid })[0]
+    if (ann) {
+      ann.account = accounts.find({ pub: ann.pub })[0]
+    }
+    return ann
   })
 
   this.getAccount = (pub) => co(function*() {

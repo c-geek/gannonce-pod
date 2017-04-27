@@ -29,6 +29,38 @@ module.exports = function HttpApi(app, instance) {
     const acc = yield instance.services.account.submit(account)
     return { acc }
   }))
+
+  handleRequest(app.get.bind(app), '/announces', (req, res) => co(function *() {
+    const announces = yield instance.services.announce.listAllOpen()
+    return { announces }
+  }))
+
+  handleRequest(app.get.bind(app), '/announces/:pub', (req, res) => co(function *() {
+    const pub = req.params.pub
+    if (!pub) {
+      throw "Parameter `pub` is mandatory"
+    }
+    const announces = yield instance.services.announce.listAnnouncesOf(pub)
+    return { announces }
+  }))
+
+  handleRequest(app.get.bind(app), '/announce/:uuid', (req, res) => co(function *() {
+    const uuid = req.params.uuid
+    if (!uuid) {
+      throw "Parameter `uuid` is mandatory"
+    }
+    const announce = yield instance.services.announce.getAnnounce(uuid)
+    return { announce }
+  }))
+
+  handleRequest(app.post.bind(app), '/announce', (req, res) => co(function *() {
+    const announce = req.body.announce
+    if (!announce) {
+      throw "Parameter `announce` is mandatory"
+    }
+    const ann = yield instance.services.announce.submit(announce)
+    return { ann }
+  }))
 }
 
 const handleRequest = (method, uri, promiseFunc) => {

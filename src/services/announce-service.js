@@ -37,6 +37,10 @@ function AnnounceService(dao, services) {
 
   this.listAll = () => dao.listAllAnnounces()
 
+  this.listAllOpen = () => dao.listAllAnnouncesWithStock()
+
+  this.listAnnouncesOf = (pub) => dao.listAnnouncesForPubkey(pub)
+
   this.search = (pattern) => dao.findAnnounces(pattern)
 
   this.getAnnounce = (uuid) => dao.getAnnounce(uuid)

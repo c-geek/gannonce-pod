@@ -10,8 +10,6 @@ module.exports = function (dao, services) {
 
 function AccountService(dao, services) {
 
-  // TODO
-
   this.submit = (raw) => co(function*() {
     const validFormat = services.validation.checkAccountFormat(raw)
     if (!validFormat) {

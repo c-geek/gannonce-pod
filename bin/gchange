@@ -63,7 +63,7 @@ const stack = duniter.statics.autoStack([{
           app.use(bodyParser.urlencoded({
             extended: true
           }));
-          app.use(bodyParser.json());
+          app.use(bodyParser.json({ limit: '1000kb' }));
 
           // ğchange stuff
           const dao = require('../src/dao')

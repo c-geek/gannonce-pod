@@ -89,12 +89,12 @@ class Announce {
     const uuid =    raw.match(/Uuid: ([0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12})\nTitle: /)
     const title =   raw.match(/Title: (.{10,100})\nDesc: /)
     const desc =    raw.match(/Desc: (.{10,10000})\nPrice: /)
-    const price =   raw.match(/Price: (\d+\.\d{2})\nFees: /)
-    const fees =    raw.match(/Fees: (\d+\.\d{2})\nType: /)
-    const type =    raw.match(/Type: (Good|Service|Crowdfunding|Auction)\nStock: /)
-    const stock =   raw.match(/Stock: ([1-9][0-9]{0,8})\n/)
+    const price =   raw.match(/Price: (\d{1,10}\.\d{2})\nFees: /)
+    const fees =    raw.match(/Fees: (\d{1,10}\.\d{2})\nType: /)
+    const type =    raw.match(/Type: (Simple|Crowdfunding|Auction)\nStock: /)
+    const stock =   raw.match(/Stock: ([1-9][0-9]{0,8}|0)\n/)
     const sig =     raw.match(/\n([A-Za-z0-9+\\/=]{87,88})$/)
-    const acc = {
+    const ann = {
       pub: pub && pub[1],
       uuid: uuid && uuid[1],
       title: title && title[1],
@@ -106,13 +106,13 @@ class Announce {
       sig: sig && sig[1],
       images: []
     }
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 5; i++) {
       const match = raw.match(new RegExp("Images\\[" + i + "\\]: (data:image\/(png|jpeg);base64,[a-zA-Z0-9/+=]{1,160000})\n"))
       if (match) {
-        acc.images.push(match && match[1])
+        ann.images.push(match && match[1])
       }
     }
-    return acc
+    return ann
   }
 
   static toRaw(obj) {
