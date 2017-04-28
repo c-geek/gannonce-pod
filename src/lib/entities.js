@@ -22,7 +22,7 @@ class Account {
   static fromRaw(raw) {
     const pub =     raw.match(/Pub: ([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{43,44})\nUuid: /)
     const uuid =    raw.match(/Uuid: ([0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12})\nTitle: /)
-    const title =   raw.match(/Title: (.{10,100})\nDesc: /)
+    const title =   raw.match(/Title: (.{4,100})\nDesc: /)
     const desc =    raw.match(/Desc: (.{10,10000})\nAddress: /)
     const address = raw.match(/Address: (.{4,100})\nLogo: /)
     const logo =    raw.match(/Logo: (data:image\/(png|jpeg);base64,[a-zA-Z0-9/+=]{1,160000})\n/)
