@@ -35,13 +35,22 @@ function AnnounceService(dao, services) {
     return json
   })
 
-  this.listAll = () => dao.listAllAnnounces()
+  this.listAll = () => dao.listAllAnnounces().then(linkFundings)
 
-  this.listAllOpen = () => dao.listAllAnnouncesWithStock()
+  this.listAllOpen = () => dao.listAllAnnouncesWithStock().then(linkFundings)
 
-  this.listAnnouncesOf = (pub) => dao.listAnnouncesForPubkey(pub)
+  this.listAnnouncesOf = (pub) => dao.listAnnouncesForPubkey(pub).then(linkFundings)
 
   this.search = (pattern) => dao.findAnnounces(pattern)
 
   this.getAnnounce = (uuid) => dao.getAnnounce(uuid)
+
+  function linkFundings(anns) {
+    return co(function*(){
+      for (const ann of anns) {
+        ann.payments = yield services.duniter.getPaymentsFor(ann.uuid)
+      }
+      return anns
+    })
+  }
 }
