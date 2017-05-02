@@ -15,7 +15,6 @@ function DuniterService(dao, services, duniterNode) {
   })
 
   this.getPaymentsFor = (uuid) => co(function*() {
-    const txs = yield duniterNode.dal.txsDAL.query('SELECT * FROM txs WHERE comment like ?', ['GANNONCE:CROWDFUNDING:' + uuid])
-    return txs
+    return yield duniterNode.dal.txsDAL.query('SELECT * FROM txs WHERE written AND comment like ?', ['GANNONCE:CROWDF:' + uuid])
   })
 }
