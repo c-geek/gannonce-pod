@@ -25,7 +25,7 @@ class Account {
     const title =   raw.match(/Title: (.{4,100})\nDesc: /)
     const desc =    raw.match(/Desc: (.{10,10000})\nAddress: /)
     const address = raw.match(/Address: (.{4,100})\nLogo: /)
-    const logo =    raw.match(/Logo: (data:image\/(png|jpeg);base64,[a-zA-Z0-9/+=]{1,160000})\n/)
+    const logo =    raw.match(/Logo: (data:image\/(png|jpeg);base64,[a-zA-Z0-9/+=]{1,250000})\n/)
     const sig =     raw.match(/\n([A-Za-z0-9+\\/=]{87,88})$/)
     const acc = {
       pub: pub && pub[1],
@@ -69,7 +69,7 @@ class Announce {
   images2files() {
     const buffers = []
     for (const img of this.images) {
-      const match = img.match(new RegExp("data:image\/(png|jpeg);base64,([a-zA-Z0-9/+=]{1,160000})\n"))
+      const match = img.match(new RegExp("data:image\/(png|jpeg);base64,([a-zA-Z0-9/+=]{1,250000})\n"))
       if (match) {
         buffers.push({
           buffer: match && Buffer.from(match[2], 'base64'),
@@ -107,7 +107,7 @@ class Announce {
       images: []
     }
     for (let i = 0; i < 5; i++) {
-      const match = raw.match(new RegExp("Images\\[" + i + "\\]: (data:image\/(png|jpeg);base64,[a-zA-Z0-9/+=]{1,160000})\n"))
+      const match = raw.match(new RegExp("Images\\[" + i + "\\]: (data:image\/(png|jpeg);base64,[a-zA-Z0-9/+=]{1,250000})\n"))
       if (match) {
         ann.images.push(match && match[1])
       }
