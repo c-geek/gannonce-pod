@@ -53,6 +53,7 @@ function AnnounceService(dao, services) {
         const copy = Announce.fromJSON(ann)
         copy.payments = yield services.duniter.getPaymentsFor(ann.uuid)
         copy.images = []
+        copy.thumbnail = ann.thumbnail
         copy.account = Account.fromJSON(ann.account)
         copy.account.logo = null
         copies.push(copy)
