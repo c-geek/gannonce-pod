@@ -69,6 +69,7 @@ module.exports = function LokiJSDao(path) {
       existing.stock = ann.stock
       existing.sig = ann.sig
       existing.images = ann.images.slice()
+      existing.thumbnail = ann.thumbnail
       announces.update(existing)
     } else {
       announces.insert(ann)
@@ -129,5 +130,10 @@ module.exports = function LokiJSDao(path) {
   this.getAccountByUuid = (uuid) => co(function*() {
     yield loadedPromise
     return accounts.find({ uuid })[0]
+  })
+
+  this.findAnnouncesWithoutThumbnail = () => co(function*() {
+    yield loadedPromise
+    return announces.where((row) => !row.thumbnail)
   })
 }

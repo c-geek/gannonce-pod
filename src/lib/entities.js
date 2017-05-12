@@ -66,18 +66,18 @@ class Announce {
     this.sig = sig
   }
 
-  images2files() {
-    const buffers = []
-    for (const img of this.images) {
-      const match = img.match(new RegExp("data:image\/(png|jpeg);base64,([a-zA-Z0-9/+=]{1,250000})\n"))
+  getFirstImage() {
+    const img = this.images[0]
+    if (img) {
+      const match = img.match(new RegExp("data:image\/(png|jpeg);base64,([a-zA-Z0-9/+=]{1,250000})"))
       if (match) {
-        buffers.push({
+        return {
           buffer: match && Buffer.from(match[2], 'base64'),
           extension: match && match[1]
-        })
+        }
       }
     }
-    return buffers
+    return null
   }
 
   static fromJSON(a) {

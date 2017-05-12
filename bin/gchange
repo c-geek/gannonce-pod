@@ -68,6 +68,10 @@ const stack = duniter.statics.autoStack([{
           // ğchange stuff
           const dao = require('../src/dao')
           const instance = gchange.server(duniterServer, new dao.LokiJSDao(duniterServer.home))
+
+          // Updates
+          yield instance.processUpdates()
+
           gchange.http_api(app, instance)
 
           const httpServer = http.createServer(app);
