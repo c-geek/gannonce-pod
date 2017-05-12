@@ -1,6 +1,7 @@
 "use strict";
 
 const co = require('co')
+const sharp = require('sharp')
 const constants = require('../lib/constants')
 const Announce = require('../lib/entities').Announce
 const Account = require('../lib/entities').Account
@@ -30,6 +31,13 @@ function AnnounceService(dao, services) {
     const ann = yield dao.getAnnounce(json.uuid)
     if (ann && ann.pub !== json.pub) {
       throw constants.ERRORS.NOT_THE_ANNOUNCE_OWNER
+    }
+    const thumbnailImage = Announce.fromJSON(json).getFirstImage()
+    if (thumbnailImage) {
+      thumbnailImage.buffer = yield sharp(thumbnailImage.buffer)
+        .resize(40,40)
+        .toBuffer()
+      json.thumbnail = 'data:image/' + thumbnailImage.extension + ';base64,' + thumbnailImage.buffer.toString('base64')
     }
     // This publisher is the owner of this announce, continue.
     yield dao.updateOrCreateAnnounce(json)
