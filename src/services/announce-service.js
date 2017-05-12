@@ -3,6 +3,7 @@
 const co = require('co')
 const constants = require('../lib/constants')
 const Announce = require('../lib/entities').Announce
+const Account = require('../lib/entities').Account
 
 module.exports = function (dao, services) {
   return new AnnounceService(dao, services)
@@ -47,12 +48,16 @@ function AnnounceService(dao, services) {
 
   function cleanForJSONAnswer(anns) {
     return co(function*(){
+      const copies = []
       for (const ann of anns) {
-        ann.payments = yield services.duniter.getPaymentsFor(ann.uuid)
-        ann.images = []
-        ann.account.logo = null
+        const copy = Announce.fromJSON(ann)
+        copy.payments = yield services.duniter.getPaymentsFor(ann.uuid)
+        copy.images = []
+        copy.account = Account.fromJSON(ann.account)
+        copy.account.logo = null
+        copies.push(copy)
       }
-      return anns
+      return copies
     })
   }
 }
