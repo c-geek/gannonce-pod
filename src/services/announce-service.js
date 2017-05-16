@@ -52,7 +52,10 @@ function AnnounceService(dao, services) {
 
   this.search = (pattern) => dao.findAnnounces(pattern)
 
-  this.getAnnounce = (uuid) => dao.getAnnounce(uuid)
+  this.getAnnounce = (uuid) => dao.getAnnounce(uuid).then((ann) => co(function*() {
+    ann.payments = yield services.duniter.getPaymentsFor(ann.uuid)
+    return ann
+  }))
 
   function cleanForJSONAnswer(anns) {
     return co(function*(){
