@@ -31,8 +31,15 @@ module.exports = function HttpApi(app, instance) {
   }))
 
   handleRequest(app.get.bind(app), '/announces', (req, res) => co(function *() {
-    const announces = yield instance.services.announce.listAllOpen()
-    return { announces }
+    let limit = req.query.limit ? parseInt(req.query.limit) : 30
+    if (!limit) {
+      limit = 100
+    }
+    let page = req.query.page ? parseInt(req.query.page) : 1
+    if (!page) {
+      page = 1
+    }
+    return yield instance.services.announce.listAllOpen(limit, page)
   }))
 
   handleRequest(app.get.bind(app), '/announces/:pub', (req, res) => co(function *() {

@@ -46,7 +46,11 @@ function AnnounceService(dao, services) {
 
   this.listAll = () => dao.listAllAnnounces().then(cleanForJSONAnswer)
 
-  this.listAllOpen = () => dao.listAllAnnouncesWithStock().then(cleanForJSONAnswer)
+  this.listAllOpen = (limit, page) => co(function*() {
+    const result = yield dao.listAllAnnouncesWithStock(limit, page)
+    result.announces = yield cleanForJSONAnswer(result.announces)
+    return result
+  })
 
   this.listAnnouncesOf = (pub) => dao.listAnnouncesForPubkey(pub).then(cleanForJSONAnswer)
 
