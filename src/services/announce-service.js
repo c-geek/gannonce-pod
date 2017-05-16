@@ -46,8 +46,8 @@ function AnnounceService(dao, services) {
 
   this.listAll = () => dao.listAllAnnounces().then(cleanForJSONAnswer)
 
-  this.listAllOpen = (limit, page) => co(function*() {
-    const result = yield dao.listAllAnnouncesWithStock(limit, page)
+  this.listAllOpen = (limit, page, search) => co(function*() {
+    const result = yield dao.listAllAnnouncesWithStock(limit, page, search)
     result.announces = yield cleanForJSONAnswer(result.announces)
     return result
   })

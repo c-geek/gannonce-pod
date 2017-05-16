@@ -87,11 +87,21 @@ module.exports = function LokiJSDao(path) {
     return announces.find()
   })
 
-  this.listAllAnnouncesWithStock = (limit, page) => co(function*() {
+  this.listAllAnnouncesWithStock = (limit, page, search) => co(function*() {
     yield loadedPromise
     const start = (page - 1) * limit
     const end = page * limit
-    const found = announces.find({ stock: { $gt: 0 }})
+    let query = { stock: { $gt: 0 } }
+    if (search) {
+      const cleanedSearch = search.replace(/([$\[\]()+*?!{}|])/g, '\\$1')
+      query = { $and: [query, {
+        $or: [
+          { title: { $regex: new RegExp(cleanedSearch)} },
+          { desc: { $regex: new RegExp(cleanedSearch)} }
+        ]
+      }]}
+    }
+    const found = announces.find(query)
     const pages = Math.ceil(found.length / limit)
     const pageRes = found.slice(start, end)
     const withAccounts = pageRes.map(a => {

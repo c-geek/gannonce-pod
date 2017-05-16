@@ -39,7 +39,8 @@ module.exports = function HttpApi(app, instance) {
     if (!page) {
       page = 1
     }
-    return yield instance.services.announce.listAllOpen(limit, page)
+    let search = req.query.search
+    return yield instance.services.announce.listAllOpen(limit, page, search)
   }))
 
   handleRequest(app.get.bind(app), '/announces/:pub', (req, res) => co(function *() {
