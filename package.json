@@ -20,7 +20,7 @@
     "chai-as-promised": "^6.0.0",
     "co": "^4.6.0",
     "cors": "^2.8.3",
-    "duniter": "^1.2.2",
+    "duniter": "1.2.4",
     "duniter-common": "^1.0.0",
     "duniter-crawler": "^1.1.4",
     "duniter-keypair": "^1.1.3",
