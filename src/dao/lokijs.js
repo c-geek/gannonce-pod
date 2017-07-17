@@ -84,7 +84,7 @@ module.exports = function LokiJSDao(path) {
 
   this.listAllAnnounces = () => co(function*() {
     yield loadedPromise
-    return announces.find()
+    return announces.find().reverse()
   })
 
   this.listAllAnnouncesWithStock = (limit, page, search) => co(function*() {
@@ -101,7 +101,7 @@ module.exports = function LokiJSDao(path) {
         ]
       }]}
     }
-    const found = announces.find(query)
+    const found = announces.find(query).reverse()
     const pages = Math.ceil(found.length / limit)
     const pageRes = found.slice(start, end)
     const withAccounts = pageRes.map(a => {
@@ -116,7 +116,7 @@ module.exports = function LokiJSDao(path) {
 
   this.listAnnouncesForPubkey = (pub) => co(function*() {
     yield loadedPromise
-    return announces.find({ pub })
+    return announces.find({ pub }).reverse()
   })
 
   this.findAnnounces = (pattern) => co(function*() {
@@ -128,7 +128,7 @@ module.exports = function LokiJSDao(path) {
         { title: { $regex: new RegExp(cleanedPattern)} },
         { desc: { $regex: new RegExp(cleanedPattern)} }
       ]
-    })
+    }).reverse()
   })
 
   this.getAnnounce = (uuid) => co(function*() {
@@ -152,6 +152,6 @@ module.exports = function LokiJSDao(path) {
 
   this.findAnnouncesWithoutThumbnail = () => co(function*() {
     yield loadedPromise
-    return announces.where((row) => !row.thumbnail)
+    return announces.where((row) => !row.thumbnail).reverse()
   })
 }
