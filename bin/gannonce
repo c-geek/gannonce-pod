@@ -19,7 +19,7 @@ const gchange = require('../index')
  ***************************************/
 
 // Default Duniter node's database
-const HOME_DUNITER_DATA_FOLDER = 'gchange';
+const HOME_DUNITER_DATA_FOLDER = 'duniter_default';
 
 // Default host on which WoT UI is available
 const DEFAULT_HOST = 'localhost';
@@ -38,7 +38,7 @@ const stack = duniter.statics.autoStack([{
     duniter: {
 
       cli: [{
-        name: 'gchange [host] [port]',
+        name: 'gannonce [host] [port]',
         desc: 'Starts ğchange node',
 
         // Disables Duniter node's logs
